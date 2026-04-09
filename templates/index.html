@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Ajedrez</title>
+
+<style>
+body {
+  background: #222;
+  color: white;
+  text-align: center;
+}
+
+#board {
+  display: grid;
+  grid-template-columns: repeat(8, 50px);
+  width: 400px;
+  margin: auto;
+}
+
+.square {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  cursor: pointer;
+}
+
+.white { background: #eee; color: black; }
+.black { background: #555; }
+
+.selected {
+  outline: 3px solid red;
+}
+</style>
+</head>
+
+<body>
+
+<h2>♟️ Tablero propio</h2>
+
+<div id="board"></div>
+
+<p id="info"></p>
+
+<script>
+const piezas = {
+  r:"♜", n:"♞", b:"♝", q:"♛", k:"♚", p:"♟",
+  R:"♖", N:"♘", B:"♗", Q:"♕", K:"♔", P:"♙"
+};
+
+let board = [
+  "rnbqkbnr",
+  "pppppppp",
+  "........",
+  "........",
+  "........",
+  "........",
+  "PPPPPPPP",
+  "RNBQKBNR"
+];
+
+let selected = null;
+
+function dibujar() {
+  const tablero = document.getElementById("board");
+  tablero.innerHTML = "";
+
+  for (let i = 0; i < 8; i++) {
+    for (let j = 0; j < 8; j++) {
+
+      let sq = document.createElement("div");
+
+      sq.className = "square " + ((i+j)%2==0 ? "white" : "black");
+
+      let pieza = board[i][j];
+      if (pieza !== ".") {
+        sq.innerText = piezas[pieza];
+      }
+
+      sq.onclick = () => clickCasilla(i, j);
+
+      tablero.appendChild(sq);
+    }
+  }
+}
+
+function clickCasilla(i, j) {
+
+  if (selected === null) {
+    selected = [i, j];
+  } else {
+
+    let from = selected;
+    let to = [i, j];
+
+    mover(from, to);
+
+    selected = null;
+  }
+
+  dibujar();
+}
+
+function mover(from, to) {
+
+  let letras = "abcdefgh";
+
+  let move =
+    letras[from[1]] + (8 - from[0]) +
+    letras[to[1]] + (8 - to[0]);
+
+  console.log("Enviando:", move);
+
+  fetch("/move", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({move: move})
+  })
+  .then(res => res.json())
+  .then(data => {
+
+    if (data.ok) {
+
+      actualizarDesdeTexto(data.board);
+
+      document.getElementById("info").innerText =
+        "Eval: " + data.eval;
+
+    } else {
+      alert("Movimiento ilegal");
+    }
+
+  });
+}
+
+function actualizarDesdeTexto(texto) {
+
+  let filas = texto.split("\n");
+
+  for (let i = 0; i < 8; i++) {
+    let fila = filas[i].split(" ");
+
+    let nueva = "";
+
+    for (let j = 0; j < 8; j++) {
+      nueva += fila[j] === "." ? "." : fila[j];
+    }
+
+    board[i] = nueva;
+  }
+
+  dibujar();
+}
+
+dibujar();
+</script>
+
+</body>
+</html>
