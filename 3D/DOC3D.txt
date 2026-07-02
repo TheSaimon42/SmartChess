@@ -1,0 +1,14 @@
+LED WS2812B:
+https://sketchfab.com/models/9ba0a9d52d144d89bff03b636e14d03b/embed
+
+Rele switch:
+https://grabcad.com/library/comus-gc2322-reed-switch-1
+
+Arduino Uno
+https://sketchfab.com/models/85e4a60ec0294e2c83fbafa6051a3681/embed
+
+ESP32
+https://sketchfab.com/models/78c2b5a932a1463bbc6e8ada630a0545/embed
+
+Tablero de ajedrez (En referencia a la base que trabajará)
+https://sketchfab.com/models/d79172dc52604edc8a4bbeb9ecea9480/embed
